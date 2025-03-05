@@ -1,0 +1,37 @@
+[versions]
+agp = "8.5.2"
+kotlin = "2.1.0"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+
+androidx-activityCompose = "1.9.3"
+atomicfu = "0.23.2"
+compose-multiplatform = "1.7.0"
+#coroutines = "1.8.0"
+datastore = "1.1.3"
+koin = "3.5.6"
+koinCompose = "1.1.5"
+koinComposeViewmodel = "1.2.0-Beta4"
+libphonenumber = "8.13.17"
+navigation = "2.7.0-alpha07"
+viewmodel = "2.8.0"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+atomicfu = { group = "org.jetbrains.kotlinx", name = "atomicfu", version.ref = "atomicfu" }
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeViewmodel" }
+#kotlin-coroutines = { module = "org.jetbrains-kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumber", version.ref = "libphonenumber" }
+navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
