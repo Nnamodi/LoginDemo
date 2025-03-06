@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+//    kotlin("jvm")
+//    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -44,6 +46,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 //	        implementation(libs.kotlin.coroutines)
+//	        implementation(libs.kotlin.serialization)
 	        implementation(libs.libphonenumber)
             implementation(libs.navigation.compose)
             implementation(libs.viewmodel.compose)

@@ -15,6 +15,7 @@ koinCompose = "1.1.5"
 koinComposeViewmodel = "1.2.0-Beta4"
 libphonenumber = "8.13.17"
 navigation = "2.7.0-alpha07"
+#serialization = "1.8.0"
 viewmodel = "2.8.0"
 
 [libraries]
@@ -25,6 +26,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeViewmodel" }
 #kotlin-coroutines = { module = "org.jetbrains-kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+#kotlin-serialization = { module = "org.jetbrains-kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumber", version.ref = "libphonenumber" }
 navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel" }
