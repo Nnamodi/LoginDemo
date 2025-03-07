@@ -16,7 +16,9 @@ class NavActions(private val navController: NavHostController) {
 					}
 				}
 			}
-			is Screens.Register -> navController.navigate(AppRoute.Register.route)
+			is Screens.Register -> navController.navigate(
+				AppRoute.Register.routeWithType(screen.loginType.name)
+			)
 		}
 	}
 }
@@ -25,7 +27,7 @@ sealed class AppRoute(val route: String) {
 	data object Home : AppRoute("home")
 	data object Login : AppRoute("login")
 	data object Register : AppRoute("register/{type}") {
-		fun routeWithType(loginType: String) = String.format("register/%s", loginType)
+		fun routeWithType(loginType: String) = "register/" + loginType
 	}
 }
 

@@ -1,10 +1,13 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinCocoapods)
 //    kotlin("jvm")
 //    kotlin("plugin.serialization")
 }
@@ -26,11 +29,34 @@ kotlin {
             isStatic = true
         }
     }
-    
+
+    cocoapods {
+        ios.deploymentTarget = "14"
+        version = "1.0"
+
+        framework {
+            summary = "Some description for a Kotlin/Native module"
+            homepage = "https://nnamodi.com"
+            baseName = "libphonenumber"
+            @OptIn(ExperimentalKotlinGradlePluginApi::class)
+            transitiveExport = true
+            isStatic = false
+        }
+
+        // Maps custom Xcode configuration to NativeBuildType
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+
+        pod("libPhoneNumber-iOS") {
+            version = "~> 0.8"
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.libphonenumber)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -47,9 +73,11 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
 //	        implementation(libs.kotlin.coroutines)
 //	        implementation(libs.kotlin.serialization)
-	        implementation(libs.libphonenumber)
             implementation(libs.navigation.compose)
             implementation(libs.viewmodel.compose)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

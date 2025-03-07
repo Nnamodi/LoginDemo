@@ -55,39 +55,43 @@ fun RegisterScreen(
 			.verticalScroll(rememberScrollState()),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		val title = if (loginType == LoginType.Register) "Register" else "Login"
+		var firstName by rememberSaveable { mutableStateOf("") }
+		var lastName by rememberSaveable { mutableStateOf("") }
+		var username by rememberSaveable { mutableStateOf("") }
+		var countryCode by rememberSaveable { mutableStateOf("") }
+		var number by rememberSaveable { mutableStateOf("") }
+
 		Text(
-			text = title,
+			text = if (loginType == LoginType.Register) "Register" else "Login",
 			modifier = Modifier.padding(20.dp),
 			fontSize = 26.sp,
 			fontWeight = FontWeight.Medium
 		)
 
-		var firstName by rememberSaveable { mutableStateOf("") }
-		CustomTextField(
-			value = firstName,
-			onValueChange = { firstName = it },
-			label = "First name",
-			focusRequester = focusRequester,
-			isError = firstNameIsError,
-			input = Input.FirstName,
-			resetInputErrorState = resetInputErrorState,
-			onNext = { focusManager.moveFocus(FocusDirection.Down) }
-		)
+		if (loginType == LoginType.Register) {
+			CustomTextField(
+				value = firstName,
+				onValueChange = { firstName = it },
+				label = "First name",
+				focusRequester = focusRequester,
+				isError = firstNameIsError,
+				input = Input.FirstName,
+				resetInputErrorState = resetInputErrorState,
+				onNext = { focusManager.moveFocus(FocusDirection.Down) }
+			)
 
-		var lastName by rememberSaveable { mutableStateOf("") }
-		CustomTextField(
-			value = lastName,
-			onValueChange = { lastName = it },
-			label = "Last name",
-			focusRequester = focusRequester,
-			isError = lastNameIsError,
-			input = Input.LastName,
-			resetInputErrorState = resetInputErrorState,
-			onNext = { focusManager.moveFocus(FocusDirection.Down) }
-		)
+			CustomTextField(
+				value = lastName,
+				onValueChange = { lastName = it },
+				label = "Last name",
+				focusRequester = focusRequester,
+				isError = lastNameIsError,
+				input = Input.LastName,
+				resetInputErrorState = resetInputErrorState,
+				onNext = { focusManager.moveFocus(FocusDirection.Down) }
+			)
+		}
 
-		var username by rememberSaveable { mutableStateOf("") }
 		CustomTextField(
 			value = username,
 			onValueChange = { username = it },
@@ -99,22 +103,22 @@ fun RegisterScreen(
 			onNext = { focusManager.moveFocus(FocusDirection.Down) }
 		)
 
-		var countryCode by rememberSaveable { mutableStateOf("") }
-		var number by rememberSaveable { mutableStateOf("") }
-		CustomTextField(
-			value = number,
-			countryCode = countryCode,
-			onValueChange = { number = it },
-			onCodeValueChange = { countryCode = it },
-			label = "Phone number",
-			focusRequester = focusRequester,
-			isError = phonenumberIsError,
-			errorMessage = requestState.error,
-			input = Input.Phone,
-			resetInputErrorState = resetInputErrorState,
-			onNext = { focusManager.moveFocus(FocusDirection.Down) },
-			onNextFromCode = { focusManager.moveFocus(FocusDirection.Next) }
-		)
+		if (loginType == LoginType.Register) {
+			CustomTextField(
+				value = number,
+				countryCode = countryCode,
+				onValueChange = { number = it },
+				onCodeValueChange = { countryCode = it },
+				label = "Phone number",
+				focusRequester = focusRequester,
+				isError = phonenumberIsError,
+				errorMessage = requestState.error,
+				input = Input.Phone,
+				resetInputErrorState = resetInputErrorState,
+				onNext = { focusManager.moveFocus(FocusDirection.Down) },
+				onNextFromCode = { focusManager.moveFocus(FocusDirection.Next) }
+			)
+		}
 
 		var password by rememberSaveable { mutableStateOf("") }
 		val loginAction = {
