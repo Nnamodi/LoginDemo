@@ -31,20 +31,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.kmp.logindemo.domain.model.PhoneNumber
 import com.roland.kmp.logindemo.domain.model.User
+import com.roland.kmp.logindemo.ui.components.CountrySelection
 import com.roland.kmp.logindemo.ui.components.CustomTextField
 import com.roland.kmp.logindemo.ui.navigation.Screens
 import com.roland.kmp.logindemo.ui.screens.login.LoginType
+import com.roland.kmp.logindemo.ui.sheet.CountryPickerBottomSheet
 import kotlinx.coroutines.delay
 
 @Composable
 fun RegisterScreen(
 	loginType: LoginType,
+	phoneNumberState: PhoneNumberState,
 	requestState: RequestState,
 	inputCheck: InputCheck,
 	actions: (Actions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val (firstNameIsError, lastNameIsError, usernameIsError, phonenumberIsError, passwordIsError) = inputCheck
+	val (flagEmoji, countryCode, dialCode, phoneNumber, countries) = phoneNumberState
+	val (firstNameIsError, lastNameIsError, usernameIsError, phoneNumberIsError, passwordIsError) = inputCheck
 	val focusRequester = remember { FocusRequester() }
 	val focusManager = LocalFocusManager.current
 	val resetInputErrorState: (Input) -> Unit = { actions(Actions.ResetInputErrorState(it)) }
@@ -58,8 +62,7 @@ fun RegisterScreen(
 		var firstName by rememberSaveable { mutableStateOf("") }
 		var lastName by rememberSaveable { mutableStateOf("") }
 		var username by rememberSaveable { mutableStateOf("") }
-		var countryCode by rememberSaveable { mutableStateOf("") }
-		var number by rememberSaveable { mutableStateOf("") }
+		val showCountrySelection = rememberSaveable { mutableStateOf(false) }
 
 		Text(
 			text = if (loginType == LoginType.Register) "Register" else "Login",
@@ -105,26 +108,30 @@ fun RegisterScreen(
 
 		if (loginType == LoginType.Register) {
 			CustomTextField(
-				value = number,
-				countryCode = countryCode,
-				onValueChange = { number = it },
-				onCodeValueChange = { countryCode = it },
-				label = "Phone number",
+				value = phoneNumber,
+				onValueChange = { actions(Actions.OnPhoneNumberChanged(it)) },
+				label = "",
 				focusRequester = focusRequester,
-				isError = phonenumberIsError,
+				isError = phoneNumberIsError,
 				errorMessage = requestState.error,
 				input = Input.Phone,
 				resetInputErrorState = resetInputErrorState,
-				onNext = { focusManager.moveFocus(FocusDirection.Down) },
-				onNextFromCode = { focusManager.moveFocus(FocusDirection.Next) }
+				leadingContent = {
+					CountrySelection(
+						dialCode = dialCode,
+						flagEmoji = flagEmoji,
+						onClick = { showCountrySelection.value = true }
+					)
+				},
+				onNext = { focusManager.moveFocus(FocusDirection.Down) }
 			)
 		}
 
 		var password by rememberSaveable { mutableStateOf("") }
 		val loginAction = {
 			if (loginType == LoginType.Register) {
-				val phonenumber = PhoneNumber(countryCode, number)
-				val user = User(firstName, lastName, username, phonenumber, password)
+				val phoneNumber = PhoneNumber(countryCode, phoneNumber)
+				val user = User(firstName, lastName, username, phoneNumber, password)
 				actions(Actions.Register(user))
 			} else {
 				actions(Actions.Login(username, password))
@@ -162,6 +169,17 @@ fun RegisterScreen(
 			} else {
 				Text(if (loginType == LoginType.Register) "Register" else "Login")
 			}
+		}
+
+		if (showCountrySelection.value) {
+			CountryPickerBottomSheet(
+				onDismissRequest = { showCountrySelection.value = false },
+				countries = countries,
+				onCountrySelected = {
+					actions(Actions.OnCountrySelected(it))
+					showCountrySelection.value = false
+				}
+			)
 		}
 	}
 

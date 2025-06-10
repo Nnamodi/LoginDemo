@@ -46,6 +46,7 @@ fun NavGraph(
 
 			RegisterScreen(
 				loginType = LoginType.valueOf(type),
+				phoneNumberState = registerViewModel.phoneNumberState,
 				requestState = registerViewModel.requestState,
 				inputCheck = registerViewModel.inputCheck,
 				actions = registerViewModel::actions,

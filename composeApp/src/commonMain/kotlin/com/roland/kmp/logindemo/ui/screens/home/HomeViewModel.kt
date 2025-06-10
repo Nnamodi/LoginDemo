@@ -20,9 +20,9 @@ class HomeViewModel : ViewModel(), KoinComponent {
 
 	init {
 		viewModelScope.launch {
-			userRepository.getUserInfo().collect {
-				_username.value = it.username
-			}
+//			userRepository.getUserInfo().collect {
+//				_username.value = it.username
+//			}
 		}
 		viewModelScope.launch {
 			_username.collect {
@@ -39,7 +39,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
 
 	private fun logout() {
 		viewModelScope.launch {
-			loggedOut = userRepository.logoutUser()
+//			loggedOut = userRepository.logoutUser()
 		}
 	}
 }

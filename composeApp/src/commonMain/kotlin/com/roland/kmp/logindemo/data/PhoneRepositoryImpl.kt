@@ -10,7 +10,7 @@ class PhoneRepositoryImpl : PhoneRepository {
 	override fun verifyNumber(phoneNumber: PhoneNumber): Boolean {
 		val phoneUtil = PhoneNumberUtil.getInstance()
 		return try {
-			val parsedNumber = phoneUtil.parse(phoneNumber.number, phoneNumber.countryCode)
+			val parsedNumber = phoneUtil.parse(phoneNumber.number, "NG")
 			phoneUtil.isValidNumber(parsedNumber)
 		} catch (e: NumberParseException) {
 			false

@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinCocoapods)
+//    alias(libs.plugins.kotlinCocoapods)
 //    kotlin("jvm")
 //    kotlin("plugin.serialization")
 }
@@ -30,27 +30,27 @@ kotlin {
         }
     }
 
-    cocoapods {
-        ios.deploymentTarget = "14"
-        version = "1.0"
-
-        framework {
-            summary = "Some description for a Kotlin/Native module"
-            homepage = "https://nnamodi.com"
-            baseName = "libphonenumber"
-            @OptIn(ExperimentalKotlinGradlePluginApi::class)
-            transitiveExport = true
-            isStatic = false
-        }
-
-        // Maps custom Xcode configuration to NativeBuildType
-        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
-        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
-
-        pod("libPhoneNumber-iOS") {
-            version = "~> 0.8"
-        }
-    }
+//    cocoapods {
+//        ios.deploymentTarget = "14"
+//        version = "1.0"
+//
+//        framework {
+//            summary = "Some description for a Kotlin/Native module"
+//            homepage = "https://nnamodi.com"
+//            baseName = "libphonenumber"
+//            @OptIn(ExperimentalKotlinGradlePluginApi::class)
+//            transitiveExport = true
+//            isStatic = false
+//        }
+//
+//        // Maps custom Xcode configuration to NativeBuildType
+//        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+//        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+//
+//        pod("libPhoneNumber-iOS") {
+//            version = "~> 0.8"
+//        }
+//    }
 
     sourceSets {
         androidMain.dependencies {

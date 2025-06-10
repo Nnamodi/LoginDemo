@@ -1,9 +1,11 @@
 package com.roland.kmp.logindemo.ui.screens.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,7 @@ fun HomeScreen(
 ) {
 	Column(
 		modifier = Modifier.fillMaxSize(),
+		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Text(
@@ -30,7 +33,7 @@ fun HomeScreen(
 			fontSize = 16.sp,
 			fontWeight = FontWeight.Medium
 		)
-		Spacer(Modifier.weight(1f))
+		Spacer(Modifier.height(150.dp))
 		Button(
 			onClick = { actions(HomeActions.Logout) },
 			modifier = Modifier

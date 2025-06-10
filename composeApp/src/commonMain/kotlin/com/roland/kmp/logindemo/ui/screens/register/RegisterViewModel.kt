@@ -9,6 +9,9 @@ import com.roland.kmp.logindemo.domain.model.PhoneNumber
 import com.roland.kmp.logindemo.domain.model.User
 import com.roland.kmp.logindemo.domain.repo.PhoneRepository
 import com.roland.kmp.logindemo.domain.repo.UserRepository
+import com.roland.kmp.logindemo.locale_provider.CountryLocale
+import com.roland.kmp.logindemo.locale_provider.LocaleProvider
+import com.roland.kmp.logindemo.ui.sheet.CountryCodeItemModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,6 +22,10 @@ import org.koin.core.component.inject
 class RegisterViewModel : ViewModel(), KoinComponent {
 	private val userRepository by inject<UserRepository>()
 	private val phoneRepository by inject<PhoneRepository>()
+	private val localeProvider = LocaleProvider.create()
+
+	private val _phoneNumberState = MutableStateFlow(PhoneNumberState())
+	var phoneNumberState by mutableStateOf(_phoneNumberState.value); private set
 
 	private val _requestState = MutableStateFlow(RequestState())
 	var requestState by mutableStateOf(_requestState.value); private set
@@ -30,8 +37,17 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 
 	init {
 		viewModelScope.launch {
-			userRepository.getUserInfo().collect {
-				user = it
+//			userRepository.getUserInfo().collect {
+//				user = it
+//			}
+		}
+		viewModelScope.launch {
+			_phoneNumberState.update { it.copy(countries = toCountryListItem(DEFAULT_LOCALE)) }
+			onCountryCodeSelected(DEFAULT_LOCALE)
+		}
+		viewModelScope.launch {
+			_phoneNumberState.collect {
+				phoneNumberState = it
 			}
 		}
 		viewModelScope.launch {
@@ -48,17 +64,33 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 
 	fun actions(action: Actions) {
 		when (action) {
+			is Actions.OnCountrySelected -> onCountryCodeSelected(action.countryCode)
+			is Actions.OnPhoneNumberChanged -> onPhoneNumberChanged(action.newValue)
 			is Actions.Login -> login(action.username, action.password)
 			is Actions.Register -> register(action.user)
 			is Actions.ResetInputErrorState -> resetInputErrorState(action.input)
 		}
 	}
 
+	private fun onCountryCodeSelected(countryCode: String) {
+		val flagEmoji = localeProvider.getFlagEmoji(countryCode)
+		val dialCode = CountryLocale.getCountryDialingCode(countryCode)
+		_phoneNumberState.update { it.copy(
+			flagEmoji = flagEmoji,
+			countryCode = countryCode,
+			dialCode = "$dialCode",
+			countries = toCountryListItem(countryCode)
+		) }
+	}
+
+	private fun onPhoneNumberChanged(newValue: String) {
+	}
+
 	private fun login(username: String, password: String) {
 		viewModelScope.launch {
 			_requestState.update { it.copy(loading = true) }
-			val ready = readyToLogin(username, password)
 			delay(2000)
+			val ready = readyToLogin(username, password)
 			_requestState.update { it.copy(
 				loading = false,
 				success = ready,
@@ -70,12 +102,12 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 	private fun register(user: User) {
 		viewModelScope.launch {
 			_requestState.update { it.copy(loading = true) }
-			val ready = readyToRegister(user)
 			delay(2000)
+			val ready = readyToRegister(user)
 			_requestState.update { it.copy(loading = false, success = ready) }
 			if (!ready) return@launch
-			val registered = userRepository.registerUser(user)
-			_requestState.update { it.copy(loading = false, success = registered) }
+//			val registered = userRepository.registerUser(user)
+			_requestState.update { it.copy(loading = false, success = true) }
 		}
 	}
 
@@ -103,7 +135,7 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 		return firstNameIsValid(user.firstName)
 				&& lastNameIsValid(user.lastName)
 				&& usernameIsValid(user.username)
-				&& phonenumberIsValid(user.phoneNumber)
+				&& phoneNumberIsValid(user.phoneNumber)
 				&& passwordIsValid(user.password)
 	}
 
@@ -125,12 +157,12 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 		return isValid
 	}
 
-	private fun phonenumberIsValid(phonenumber: PhoneNumber): Boolean {
-		val isValid = phonenumber.countryCode.isNotEmpty() && phonenumber.number.isNotEmpty()
-		val isVerified = phoneRepository.verifyNumber(phonenumber)
+	private fun phoneNumberIsValid(phoneNumber: PhoneNumber): Boolean {
+		val isValid = phoneNumber.countryCode.isNotEmpty() && phoneNumber.number.isNotEmpty()
+		val isVerified = phoneRepository.verifyNumber(phoneNumber)
 		if (!isVerified) _requestState.update { it.copy(error = "Enter a valid phone number") }
 		_inputCheck.update { it.copy(phoneNumberIsError = !(isValid && isVerified)) }
-		return isValid
+		return isValid && isVerified
 	}
 
 	private fun passwordIsValid(password: String): Boolean {
@@ -138,4 +170,22 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 		_inputCheck.update { it.copy(passwordIsError = !isValid) }
 		return isValid
 	}
+
+	private fun toCountryListItem(currentCountryCode: String) : List<CountryCodeItemModel> {
+		val sortedCountriesPair = CountryLocale.getCountryCodes().map { countryCode ->
+			countryCode to localeProvider.getLocaleIsoCountries(countryCode)
+		}.sortedBy { it.second }
+		return sortedCountriesPair.map { (countryCode, countryName) ->
+			val dialCode = CountryLocale.getCountryDialingCode(countryCode)
+			CountryCodeItemModel(
+				flagEmoji = localeProvider.getFlagEmoji(countryCode),
+				title = "$dialCode",
+				body = countryName,
+				countryCode = countryCode,
+				isChecked = countryCode == currentCountryCode
+			)
+		}
+	}
 }
+
+private const val DEFAULT_LOCALE = "NG"
