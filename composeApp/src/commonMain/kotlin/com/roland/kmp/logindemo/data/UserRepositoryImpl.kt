@@ -1,62 +1,63 @@
 package com.roland.kmp.logindemo.data
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.roland.kmp.logindemo.data.sharedPref.AppSharedPrefProvider
 import com.roland.kmp.logindemo.domain.model.PhoneNumber
 import com.roland.kmp.logindemo.domain.model.User
 import com.roland.kmp.logindemo.domain.repo.UserRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private val USERNAME_KEY = stringPreferencesKey("firstname_key")
-private val PASSWORD_KEY = stringPreferencesKey("password_key")
-
 class UserRepositoryImpl : UserRepository, KoinComponent {
-	private val dataStore by inject<DataStore<Preferences>>()
+	private val sharedPref: AppSharedPrefProvider by inject()
 
-	override fun getUserInfo(): Flow<User> {
-		return dataStore.data
-			.catch { emptyFlow<User>() }
-			.map { preferences ->
-				User(
-					firstName = "",
-					lastName = "",
-					username = preferences[USERNAME_KEY] ?: "",
-					phoneNumber = PhoneNumber("", ""),
-					password = preferences[PASSWORD_KEY] ?: ""
-				)
-			}
+	override fun getUserInfo(): User {
+		val firstName = sharedPref.get(FIRST_NAME_KEY)
+		val lastName = sharedPref.get(LAST_NAME_KEY)
+		val username = sharedPref.get(USERNAME_KEY)
+		val password = sharedPref.get(PASSWORD_KEY)
+		val countryCode = sharedPref.get(COUNTRY_CODE_KEY)
+		val phoneNumber = sharedPref.get(PHONE_NUMBER_KEY)
+		return User(
+            firstName = "$firstName",
+			lastName = "$lastName",
+            username = "$username",
+            password = "$password",
+			phoneNumber = PhoneNumber(
+				countryCode = "$countryCode",
+				number = "$phoneNumber"
+			)
+		)
 	}
 
 	override suspend fun registerUser(user: User): Boolean {
-		return try {
-			dataStore.edit { preferences ->
-				preferences[USERNAME_KEY] = user.username
-				preferences[PASSWORD_KEY] = user.password
-			}
-			true
-		} catch (e: Exception) {
-			println("registerUser() Error: $e")
-			false
-		}
+		val firstNameSaved = sharedPref.set(FIRST_NAME_KEY, user.firstName)
+		val lastNameSaved = sharedPref.set(LAST_NAME_KEY, user.lastName)
+		val usernameSaved = sharedPref.set(USERNAME_KEY, user.username)
+		val passwordSaved = sharedPref.set(PASSWORD_KEY, user.password)
+		val countryCodeSaved = sharedPref.set(COUNTRY_CODE_KEY, user.phoneNumber.countryCode)
+		val phoneNumberSaved = sharedPref.set(PHONE_NUMBER_KEY, user.phoneNumber.number)
+
+		return firstNameSaved && lastNameSaved && usernameSaved && passwordSaved && countryCodeSaved && phoneNumberSaved
 	}
 
 	override suspend fun logoutUser(): Boolean {
-		return try {
-			dataStore.edit { preferences ->
-				preferences[USERNAME_KEY] = ""
-				preferences[PASSWORD_KEY] = ""
-			}
-			true
-		} catch (e: Exception) {
-			println("registerUser() Error: $e")
-			false
-		}
+		val firstNameRemoved = sharedPref.remove(FIRST_NAME_KEY)
+		val lastNameRemoved = sharedPref.remove(LAST_NAME_KEY)
+		val usernameRemoved = sharedPref.remove(USERNAME_KEY)
+		val passwordRemoved = sharedPref.remove(PASSWORD_KEY)
+		val countryCodeRemoved = sharedPref.remove(COUNTRY_CODE_KEY)
+		val phoneNumberRemoved = sharedPref.remove(PHONE_NUMBER_KEY)
+
+		return firstNameRemoved && lastNameRemoved && usernameRemoved && passwordRemoved && countryCodeRemoved && phoneNumberRemoved
+	}
+
+	companion object {
+		const val FIRST_NAME_KEY = "first_name"
+		const val LAST_NAME_KEY = "last_name"
+		const val USERNAME_KEY = "username"
+		const val PASSWORD_KEY = "password"
+
+		const val COUNTRY_CODE_KEY = "country_code"
+		const val PHONE_NUMBER_KEY = "phone_number"
 	}
 }

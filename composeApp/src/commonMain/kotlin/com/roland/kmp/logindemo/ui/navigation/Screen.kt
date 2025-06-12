@@ -27,7 +27,7 @@ sealed class AppRoute(val route: String) {
 	data object Home : AppRoute("home")
 	data object Login : AppRoute("login")
 	data object Register : AppRoute("register/{type}") {
-		fun routeWithType(loginType: String) = "register/" + loginType
+		fun routeWithType(loginType: String) = "register/$loginType"
 	}
 }
 

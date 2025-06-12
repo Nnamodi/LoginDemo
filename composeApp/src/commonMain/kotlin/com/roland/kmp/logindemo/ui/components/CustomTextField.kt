@@ -14,10 +14,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -27,8 +32,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardCapitalization.Companion.None
 import androidx.compose.ui.text.input.KeyboardCapitalization.Companion.Words
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.roland.kmp.logindemo.ui.screens.register.Input
+import logindemo.composeapp.generated.resources.Res
+import logindemo.composeapp.generated.resources.error
+import logindemo.composeapp.generated.resources.visibility
+import logindemo.composeapp.generated.resources.visibility_off
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CustomTextField(
@@ -52,6 +64,8 @@ fun CustomTextField(
 	onNext: (KeyboardActionScope.() -> Unit)? = null,
 	onDone: (KeyboardActionScope.() -> Unit)? = null
 ) {
+	var hidePassword by remember { mutableStateOf(input == Input.Password) }
+
 	OutlinedTextField(
 		value = value,
 		onValueChange = {
@@ -64,8 +78,22 @@ fun CustomTextField(
 			.padding(30.dp, 6.dp),
 		label = { Text(label) },
 		leadingIcon = leadingContent,
+		trailingIcon = {
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				if (isError) {
+					Icon(painterResource(Res.drawable.error), null)
+				}
+				if (input == Input.Password) {
+					IconButton(onClick = { hidePassword = !hidePassword }) {
+						val iconRes = if (hidePassword) Res.drawable.visibility_off else Res.drawable.visibility
+						Icon(painterResource(iconRes), null)
+					}
+				}
+			}
+		},
 		supportingText = { errorMessage?.let { Text(it) } },
 		isError = isError,
+		visualTransformation = if (hidePassword) PasswordVisualTransformation() else VisualTransformation.None,
 		keyboardOptions = KeyboardOptions(
 			capitalization = capitalization,
 			keyboardType = keyboardType,

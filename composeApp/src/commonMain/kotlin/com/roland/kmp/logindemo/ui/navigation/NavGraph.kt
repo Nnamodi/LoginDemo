@@ -21,8 +21,6 @@ fun NavGraph(
 	startDestination: String = AppRoute.Login.route
 ) {
 	val navActions = NavActions(navController)
-	val homeViewModel: HomeViewModel = koinViewModel()
-	val registerViewModel: RegisterViewModel = koinViewModel()
 
 	NavHost(
 		navController = navController,
@@ -32,7 +30,9 @@ fun NavGraph(
 			LoginScreen(navActions::navigate)
 		}
 		composable(AppRoute.Home.route) {
+			val homeViewModel: HomeViewModel = koinViewModel()
 			LaunchedEffect(homeViewModel.loggedOut) {
+				if (!homeViewModel.loggedOut) return@LaunchedEffect
 				navActions.navigate(Screens.BackToLogin)
 			}
 
@@ -42,6 +42,7 @@ fun NavGraph(
 			)
 		}
 		composable(AppRoute.Register.route) { backStackEntry ->
+			val registerViewModel: RegisterViewModel = koinViewModel()
 			val type = backStackEntry.arguments?.getString("type") ?: ""
 
 			RegisterScreen(

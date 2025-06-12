@@ -6,15 +6,20 @@ import utils.NumberParseException
 import utils.PhoneNumberUtil
 
 class PhoneRepositoryImpl : PhoneRepository {
+	val phoneUtil = PhoneNumberUtil.getInstance()
 
 	override fun verifyNumber(phoneNumber: PhoneNumber): Boolean {
-		val phoneUtil = PhoneNumberUtil.getInstance()
 		return try {
-			val parsedNumber = phoneUtil.parse(phoneNumber.number, "NG")
+			val parsedNumber = phoneUtil.parse(phoneNumber.number, phoneNumber.countryCode)
 			phoneUtil.isValidNumber(parsedNumber)
 		} catch (e: NumberParseException) {
 			false
 		}
+	}
+
+	override fun getAsYouTypeFormatter(newInput: Char, regionCode: String): String {
+		val formatter = phoneUtil.getAsYouTypeFormatter(regionCode)
+		return formatter.inputDigit(newInput)
 	}
 
 }

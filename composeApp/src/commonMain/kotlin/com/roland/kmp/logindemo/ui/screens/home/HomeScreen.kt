@@ -30,7 +30,7 @@ fun HomeScreen(
 		Text(
 			text = "Welcome home, $username",
 			modifier = Modifier.padding(30.dp),
-			fontSize = 16.sp,
+			fontSize = 24.sp,
 			fontWeight = FontWeight.Medium
 		)
 		Spacer(Modifier.height(150.dp))

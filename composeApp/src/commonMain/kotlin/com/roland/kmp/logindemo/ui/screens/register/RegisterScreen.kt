@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,9 @@ import com.roland.kmp.logindemo.ui.navigation.Screens
 import com.roland.kmp.logindemo.ui.screens.login.LoginType
 import com.roland.kmp.logindemo.ui.sheet.CountryPickerBottomSheet
 import kotlinx.coroutines.delay
+import logindemo.composeapp.generated.resources.Res
+import logindemo.composeapp.generated.resources.success
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun RegisterScreen(
@@ -143,6 +147,7 @@ fun RegisterScreen(
 			label = "Password",
 			focusRequester = focusRequester,
 			isError = passwordIsError,
+			errorMessage = requestState.error.takeIf { loginType == LoginType.Login },
 			input = Input.Password,
 			resetInputErrorState = resetInputErrorState,
 			onDone = {
@@ -161,14 +166,23 @@ fun RegisterScreen(
 			shape = MaterialTheme.shapes.medium,
 			colors = buttonColors(containerColor = if (requestState.success) Color.Green else Color.Unspecified)
 		) {
-			if (requestState.loading) {
-				CircularProgressIndicator(
-					modifier = Modifier.size(24.dp),
-					strokeWidth = 2.dp
-				)
-			} else {
-				Text(if (loginType == LoginType.Register) "Register" else "Login")
-			}
+            when {
+                requestState.loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+				requestState.success -> {
+					Icon(
+						painter = painterResource(Res.drawable.success),
+						contentDescription = null
+					)
+				}
+                else -> {
+                    Text(if (loginType == LoginType.Register) "Register" else "Login")
+                }
+            }
 		}
 
 		if (showCountrySelection.value) {

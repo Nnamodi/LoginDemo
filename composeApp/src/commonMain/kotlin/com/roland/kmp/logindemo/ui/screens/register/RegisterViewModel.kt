@@ -37,9 +37,7 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 
 	init {
 		viewModelScope.launch {
-//			userRepository.getUserInfo().collect {
-//				user = it
-//			}
+			user = userRepository.getUserInfo()
 		}
 		viewModelScope.launch {
 			_phoneNumberState.update { it.copy(countries = toCountryListItem(DEFAULT_LOCALE)) }
@@ -84,13 +82,20 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 	}
 
 	private fun onPhoneNumberChanged(newValue: String) {
+		val phoneNumber = phoneRepository.getAsYouTypeFormatter(
+            newInput = newValue.last(),
+            regionCode = phoneNumberState.countryCode
+		)
+		_phoneNumberState.update { it.copy(phoneNumber = newValue) }
 	}
 
 	private fun login(username: String, password: String) {
 		viewModelScope.launch {
+			_inputCheck.value = InputCheck()
 			_requestState.update { it.copy(loading = true) }
 			delay(2000)
 			val ready = readyToLogin(username, password)
+			if (!ready) _inputCheck.update { it.copy(usernameIsError = true, passwordIsError = true) }
 			_requestState.update { it.copy(
 				loading = false,
 				success = ready,
@@ -106,8 +111,8 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 			val ready = readyToRegister(user)
 			_requestState.update { it.copy(loading = false, success = ready) }
 			if (!ready) return@launch
-//			val registered = userRepository.registerUser(user)
-			_requestState.update { it.copy(loading = false, success = true) }
+			val registered = userRepository.registerUser(user)
+			_requestState.update { it.copy(loading = false, success = registered) }
 		}
 	}
 
@@ -116,12 +121,11 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 			Input.FirstName -> _inputCheck.update { it.copy(firstNameIsError = false) }
 			Input.LastName -> _inputCheck.update { it.copy(lastNameIsError = false) }
 			Input.Username -> _inputCheck.update { it.copy(usernameIsError = false) }
-			Input.Phone -> {
-				_inputCheck.update { it.copy(phoneNumberIsError = false) }
-				_requestState.value = RequestState()
-			}
+			Input.Phone -> _inputCheck.update { it.copy(phoneNumberIsError = false) }
 			Input.Password -> _inputCheck.update { it.copy(passwordIsError = false) }
 		}
+        if (input != Input.Phone && input != Input.Password) return
+		_requestState.value = RequestState()
 	}
 
 	private fun readyToLogin(username: String, password: String): Boolean {

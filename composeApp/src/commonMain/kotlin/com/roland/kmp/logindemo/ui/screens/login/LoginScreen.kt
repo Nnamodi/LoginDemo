@@ -1,5 +1,6 @@
 package com.roland.kmp.logindemo.ui.screens.login
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ fun LoginScreen(navigate: (Screens) -> Unit) {
 		modifier = Modifier
 			.fillMaxSize()
 			.verticalScroll(rememberScrollState()),
+		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Text(
@@ -34,7 +36,7 @@ fun LoginScreen(navigate: (Screens) -> Unit) {
 			fontSize = 26.sp,
 			fontWeight = FontWeight.Medium
 		)
-		Spacer(Modifier.height(150.dp))
+		Spacer(Modifier.height(70.dp))
 		Button(
 			onClick = { navigate(Screens.Register(LoginType.Register)) },
 			modifier = Modifier
