@@ -9,6 +9,7 @@ import com.roland.kmp.logindemo.domain.model.PhoneNumber
 import com.roland.kmp.logindemo.domain.model.User
 import com.roland.kmp.logindemo.domain.repo.PhoneRepository
 import com.roland.kmp.logindemo.domain.repo.UserRepository
+import com.roland.kmp.logindemo.domain.repo.UtilRepository
 import com.roland.kmp.logindemo.locale_provider.CountryLocale
 import com.roland.kmp.logindemo.locale_provider.LocaleProvider
 import com.roland.kmp.logindemo.ui.sheet.CountryCodeItemModel
@@ -21,6 +22,7 @@ import org.koin.core.component.inject
 
 class RegisterViewModel : ViewModel(), KoinComponent {
 	private val userRepository by inject<UserRepository>()
+	private val utilRepository by inject<UtilRepository>()
 	private val phoneRepository by inject<PhoneRepository>()
 	private val localeProvider = LocaleProvider.create()
 
@@ -92,15 +94,19 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 	private fun login(username: String, password: String) {
 		viewModelScope.launch {
 			_inputCheck.value = InputCheck()
-			_requestState.update { it.copy(loading = true) }
+			_requestState.update { it.copy(loading = true, error = null) }
 			delay(2000)
 			val ready = readyToLogin(username, password)
-			if (!ready) _inputCheck.update { it.copy(usernameIsError = true, passwordIsError = true) }
 			_requestState.update { it.copy(
 				loading = false,
 				success = ready,
 				error = "Incorrect credentials".takeIf { !ready }
 			) }
+			if (!ready) {
+				_inputCheck.update { it.copy(usernameIsError = true, passwordIsError = true) }
+				return@launch
+			}
+			utilRepository.saveLoginStatus(isLaunched = true)
 		}
 	}
 
@@ -113,6 +119,7 @@ class RegisterViewModel : ViewModel(), KoinComponent {
 			if (!ready) return@launch
 			val registered = userRepository.registerUser(user)
 			_requestState.update { it.copy(loading = false, success = registered) }
+			utilRepository.saveLoginStatus(isLaunched = registered)
 		}
 	}
 

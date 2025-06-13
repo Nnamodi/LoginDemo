@@ -40,17 +40,6 @@ class UserRepositoryImpl : UserRepository, KoinComponent {
 		return firstNameSaved && lastNameSaved && usernameSaved && passwordSaved && countryCodeSaved && phoneNumberSaved
 	}
 
-	override suspend fun logoutUser(): Boolean {
-		val firstNameRemoved = sharedPref.remove(FIRST_NAME_KEY)
-		val lastNameRemoved = sharedPref.remove(LAST_NAME_KEY)
-		val usernameRemoved = sharedPref.remove(USERNAME_KEY)
-		val passwordRemoved = sharedPref.remove(PASSWORD_KEY)
-		val countryCodeRemoved = sharedPref.remove(COUNTRY_CODE_KEY)
-		val phoneNumberRemoved = sharedPref.remove(PHONE_NUMBER_KEY)
-
-		return firstNameRemoved && lastNameRemoved && usernameRemoved && passwordRemoved && countryCodeRemoved && phoneNumberRemoved
-	}
-
 	companion object {
 		const val FIRST_NAME_KEY = "first_name"
 		const val LAST_NAME_KEY = "last_name"

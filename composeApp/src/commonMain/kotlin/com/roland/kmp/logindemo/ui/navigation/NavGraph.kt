@@ -31,8 +31,8 @@ fun NavGraph(
 		}
 		composable(AppRoute.Home.route) {
 			val homeViewModel: HomeViewModel = koinViewModel()
-			LaunchedEffect(homeViewModel.loggedOut) {
-				if (!homeViewModel.loggedOut) return@LaunchedEffect
+			LaunchedEffect(homeViewModel.loggedIn) {
+				if (homeViewModel.loggedIn) return@LaunchedEffect
 				navActions.navigate(Screens.BackToLogin)
 			}
 

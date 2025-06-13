@@ -8,6 +8,4 @@ interface UserRepository {
 
 	suspend fun registerUser(user: User): Boolean
 
-	suspend fun logoutUser(): Boolean
-
 }

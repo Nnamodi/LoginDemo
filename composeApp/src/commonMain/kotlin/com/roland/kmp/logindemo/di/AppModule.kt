@@ -4,12 +4,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.roland.kmp.logindemo.data.PhoneRepositoryImpl
 import com.roland.kmp.logindemo.data.UserRepositoryImpl
+import com.roland.kmp.logindemo.data.UtilRepositoryImpl
 import com.roland.kmp.logindemo.data.local.createDataStore
 import com.roland.kmp.logindemo.data.sharedPref.AppContext
 import com.roland.kmp.logindemo.data.sharedPref.AppSharedPrefProvider
 import com.roland.kmp.logindemo.data.sharedPref.buildSharedPref
 import com.roland.kmp.logindemo.domain.repo.PhoneRepository
 import com.roland.kmp.logindemo.domain.repo.UserRepository
+import com.roland.kmp.logindemo.domain.repo.UtilRepository
 import com.roland.kmp.logindemo.ui.screens.home.HomeViewModel
 import com.roland.kmp.logindemo.ui.screens.register.RegisterViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -28,6 +30,7 @@ object AppModule {
 	fun build(appContext: AppContext) = module {
 //		single { providesDataStore(get()) }
 		single { providesSharedPref(appContext, "store.preferences.logindemo") }
+		single<UtilRepository> { UtilRepositoryImpl() }
 		single<UserRepository> { UserRepositoryImpl() }
 		single<PhoneRepository> { PhoneRepositoryImpl() }
 		viewModel { HomeViewModel() }

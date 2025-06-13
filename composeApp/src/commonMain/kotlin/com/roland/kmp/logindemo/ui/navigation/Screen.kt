@@ -6,12 +6,21 @@ import com.roland.kmp.logindemo.ui.screens.login.LoginType
 class NavActions(private val navController: NavHostController) {
 	fun navigate(screen: Screens) {
 		when (screen) {
-			Screens.Home -> navController.navigate(AppRoute.Home.route)
-			Screens.Login -> navController.navigate(AppRoute.Login.route)
-			Screens.BackToLogin -> {
-				navController.navigate(AppRoute.Login.route) {
+			Screens.Home -> {
+				navController.graph.setStartDestination(AppRoute.Home.route)
+				navController.navigate(AppRoute.Home.route) {
 					launchSingleTop = true
 					popUpTo(AppRoute.Login.route) {
+						inclusive = true
+					}
+				}
+			}
+			Screens.Login -> navController.navigate(AppRoute.Login.route)
+			Screens.BackToLogin -> {
+				navController.graph.setStartDestination(AppRoute.Login.route)
+				navController.navigate(AppRoute.Login.route) {
+					launchSingleTop = true
+					popUpTo(AppRoute.Home.route) {
 						inclusive = true
 					}
 				}
